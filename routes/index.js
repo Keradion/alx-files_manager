@@ -3,7 +3,7 @@ const router = express.Router();
 
 const AppController = require('../controllers/AppController'); // Expose getStatus and getStats methods.
 
-const UserController = require('../controllers/UserController');
+const UserController = require('../controllers/UsersController');
 
 // Redirecting /status and /stats endpoint requests into the corresponding handlers.
 router.get('/status', AppController.getStatus);
