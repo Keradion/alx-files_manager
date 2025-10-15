@@ -1,44 +1,45 @@
 import { createClient } from 'redis';
 import { promisify } from 'util';
 
-// RedisClient instance has a property called client
-// its a redis client. allow us to perform redis operations.
+class RedisClient {
+  constructor() {
+    this.client = createClient();
+    this.client.alive = false;
 
-class RedisClient{
+    this.client.on('error', (err) => {
+      this.client.alive = false;
+      console.error('Redis error:', err);
+    });
 
-        constructor() {
-                this.client = createClient();
-		this.client.alive = true;
-		this.client.on('error', function(error) {
-		});
-		this.client.on('connect', function() {
-		});
-		this.client.get = promisify(this.client.get).bind(this.client);
-                this.client.set = promisify(this.client.set).bind(this.client);
-                this.client.del = promisify(this.client.del).bind(this.client)
-        }
+    this.client.on('connect', () => {
+      this.client.alive = true;
+    });
 
-        // Return True when the connection with redis is success otherwise False.
-        isAlive(){
-		return this.client.alive;
-        };
+    this.client.get = promisify(this.client.get).bind(this.client);
+    this.client.set = promisify(this.client.set).bind(this.client);
+    this.client.del = promisify(this.client.del).bind(this.client);
+  }
 
-        // Takes a string key as an argument and return a value that stored under it in redis.
-        async get(redisKey){
-		return await this.client.get(redisKey);
-        };
+  // Return true when the connection with Redis is successful
+  isAlive() {
+    return this.client.alive;
+  }
 
-        // Takes a string key, a value and duration to store in redis.
-        async set(redisKey, redisValue, duration){
-		await this.client.set(redisKey, redisValue, 'EX', duration);
-        };
+  // Takes a string key and returns the value stored under it in Redis
+  async get(redisKey) {
+    return this.client.get(redisKey);
+  }
 
-        // Takes a string key as argument and remove the value in redis under that key
-        async del(redisKey){
-		await this.client.del(redisKey);
-        };
+  // Takes a string key, value, and duration (in seconds) to store in Redis
+  async set(redisKey, redisValue, duration) {
+    return this.client.set(redisKey, redisValue, 'EX', duration);
+  }
 
-};
+  // Takes a string key and removes the value in Redis under that key
+  async del(redisKey) {
+    return this.client.del(redisKey);
+  }
+}
 
-const redisClient = new RedisClient();
-export default redisClient;
+export default new RedisClient();
+
