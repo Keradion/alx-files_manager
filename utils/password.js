@@ -1,10 +1,10 @@
-const SHA1 = require('./sha1-es');
+const SHA1 = require('sha1');
 
 const hashPassword = async (password) => {
 	
 	// hash the password.
 
-	return SHA1.hash(password);
+	return SHA1(password);
 }
 
 const validateHashPassword = async (password, hash) => {

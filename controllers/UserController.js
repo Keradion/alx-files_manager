@@ -1,6 +1,6 @@
 // importing the necessary utilities
 const dbClient = require('../utils/db.js');
-const hashPassword = require('../utils/password.js');
+const Password = require('../utils/password.js');
 const validate = require('../utils/validation.js');
 
 class UserController{
@@ -10,7 +10,7 @@ class UserController{
 		
 		const { email, password } = request.body;
 
-		const { isValid, error} = validate(email, password);
+		const { isValid, error} = await validate(email, password);
 
 		if (!isValid) {
 			response.status(400).json({
@@ -19,23 +19,14 @@ class UserController{
 			return;
 		}
 
-                // Check if the user email is already in DB and deny.?
-
-                if (await userExist(email)){
-                        response.status(400).json({
-                                'error':'Already Exist'
-                        });
-                        return;
-                }
-
                 // Get hashed format of the user password. ?
 
-                const hashedPassword = await getHashedPassword(password);
+                const hashedPassword = await Password.hashPassword(password);
 
                 // Insert the new user into the database.
                 // mongo returns an object including uuid filed.
 
-                const newUser = await insertUserToDB({
+                const newUser = await dbClient.insertUserToDB({
                         'email': email,
                         'password': hashedPassword
                 });
@@ -43,10 +34,11 @@ class UserController{
                 // Retrurn id and email of the new user saved in DB.
                 
 		response.status(201).json({
-                        '_id': newUser['_id'],
-			'email': newUser['email']
+                        '_id': newUser['insertedId'],
+			'email': email
 		});
 
+}
 }
 
 module.exports = UserController;

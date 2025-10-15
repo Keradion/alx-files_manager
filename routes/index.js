@@ -3,10 +3,14 @@ const router = express.Router();
 
 const AppController = require('../controllers/AppController'); // Expose getStatus and getStats methods.
 
-// Redirecting /status and /stats endpoint requests into the corresponding handlers.
+const UserController = require('../controllers/UserController');
 
+// Redirecting /status and /stats endpoint requests into the corresponding handlers.
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
+
+// Redirecting /users endpoint requests into the corresponding handler.
+router.post('/users', UserController.postNew);
 
 // Exposing router to other modules requiring it.
 module.exports = router;
