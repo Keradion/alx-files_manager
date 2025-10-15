@@ -1,5 +1,4 @@
-import { MongoClient } from 'mongodb'
-
+const MongoClient = require('mongodb').MongoClient;
 
 // get environment variables
 
@@ -17,12 +16,13 @@ class DBClient{
 			useUnifiedTopology: true 
 		});
 
+		this.mongoclient.isalive = false;
+
 		try {
 			this.mongoclient.connect();
 			this.mongoclient.isalive = true;
 		} catch (error) {
 			console.log(error);
-			this.mongoclient.isalive = false;
 		}
 
 	}
@@ -43,6 +43,4 @@ class DBClient{
 
 const dbclient = new DBClient();
 
-export default dbclient;
-
-
+module.exports = dbclient;
