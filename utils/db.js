@@ -39,6 +39,20 @@ class DBClient{
 		return await this.mongoclient.db(database).collection('files').countDocuments({});
 	}
 
+	async insertUserToDB(user) {
+		return await this.mongoclient
+			.db(database)
+			.collection('users')
+			.insertOne(user)
+	}
+
+	async findUserByEmail(email) {
+		return await this.mongoclient
+			.db(database)
+			.collection('users')
+			.findOne({ 'email': email }); }
+
+
 }
 
 const dbclient = new DBClient();
