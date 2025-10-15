@@ -34,7 +34,7 @@ class UserController{
                 // Retrurn id and email of the new user saved in DB.
                 
 		response.status(201).json({
-                        '_id': newUser['insertedId'],
+                        'id': newUser['insertedId'],
 			'email': email
 		});
 
