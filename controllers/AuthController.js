@@ -43,7 +43,7 @@ class AuthController{
 		// remove the token from redis and return true.
 
 		if (await user.disconnectUser(token)) {
-			response.status(201).end();
+			response.status(204).end();
 			return;
 		}
 
