@@ -20,16 +20,11 @@ class AuthController{
 
 		console.log(user);
 
-		if (!user) {
+		if (!user || !(await Password.validateHashPassword(password, user.password || ''))) {
 			response.status(401).json({ 'error': 'Unauthorized' });
 			return;
 		}
 
-		// Password is invalid
-		if (! (await Password.validateHashPassword(password, user.password))) {
-			response.status(401).json({ 'error': 'Unauthorized' });
-                        return;
-		}
 
 		// Get an authorization token and set in redis
 		// so that we can keep track of the user ?
