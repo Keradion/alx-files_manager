@@ -2,9 +2,11 @@
 const dbClient = require('../utils/db.js');
 const Password = require('../utils/password.js');
 const validate = require('../utils/validation.js');
+const User = require('../utils/user.js');
 
 class UserController{
-        static async postNew(request, response){
+        
+	static async postNew(request, response){
 
                 // handle the case when either an email or password is miss.
 		
@@ -37,8 +39,32 @@ class UserController{
                         'id': newUser['insertedId'],
 			'email': email
 		});
+	}
 
-}
+	static async getMe(request, response) {
+
+		// Read the token from the request
+	
+		const token = request.headers['x-token'];
+
+		// Fetch the user id associated with the token from redis and the user from DB?
+	
+		const user = await User.getUser(token);
+
+		if (!user) {
+			response.status(401).json({ 'error': 'Unauthorized' });
+			return;
+		};
+
+		console.log(user);
+
+		response.status(200).json({
+			'email': user.email,
+			'id': user._id
+		});
+	}
+
+
 }
 
 module.exports = UserController;

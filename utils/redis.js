@@ -37,7 +37,8 @@ class RedisClient {
   }
 
   // Takes a string key and removes the value in Redis under that key
-  async del(redisKey) {
+  async del(redisKey){
+	  console.log(redisKey);
     return this.client.del(redisKey);
   }
 }

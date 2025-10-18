@@ -1,5 +1,6 @@
 const dbClient = require('../utils/db.js');
 const token = require('../utils/token.js');
+const user = require('../utils//user.js');
 	
 class AuthController{
 	
@@ -12,7 +13,7 @@ class AuthController{
 		const email = await token.decodeAuthToken(authorizationToken);
 		
 		// check if there is any user associated with the email provided
-		console.log(email);
+		console.log(email.length, email);
 
 		const user = await dbClient.findUserByEmail(email);
 
@@ -36,9 +37,21 @@ class AuthController{
 	}
 	
 	static async disconnect (request, response) {
+		const token = request.headers['x-token'];
+
+		// check if the user id and token has found 
+		// remove the token from redis and return true.
+
+		if (await user.disconnectUser(token)) {
+			response.status(201).end();
+			return;
+		}
+
+		response.status(401).json({
+			'error': 'unauthorized'
+		});
 
 }
-
 }
 
 

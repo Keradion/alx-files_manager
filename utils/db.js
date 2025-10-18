@@ -1,4 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
+const objectId = require('mongodb').ObjectId;
 
 // get environment variables
 
@@ -50,8 +51,19 @@ class DBClient{
 		return await this.mongoclient
 			.db(database)
 			.collection('users')
-			.findOne({ 'email': email }); }
+			.findOne({ 'email': email }); 
+	}
 
+	async findUserById(id) {
+
+		// construct the id for mongodb
+		const _id = new objectId(id);
+
+		return await this.mongoclient
+			.db(database)
+			.collection('users')
+			.findOne({ _id });
+	}
 
 }
 
