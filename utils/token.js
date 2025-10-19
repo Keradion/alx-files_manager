@@ -13,7 +13,7 @@ const decodeAuthToken = (token) => {
 	
 	const [ email, password ] = decodedString.split(':');
 
-	return email;
+	return { email, password };
 }
 
 const generateAuthToken = async (userId) => {

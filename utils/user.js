@@ -11,7 +11,6 @@ const getUser = async (authToken) => {
 	
 	const user = await dbClient.findUserById(userId);
 
-	console.log(user);
 
 	return user;
 }
