@@ -14,11 +14,8 @@ class AuthController{
 		const { email, password }  = await Token.decodeAuthToken(authorizationToken);
 		
 		// check if there is any user associated with the email provided
-		console.log(email.length, email);
 
 		const user = await dbClient.findUserByEmail(email);
-
-		console.log(user);
 
 		if (!user || !(await Password.validateHashPassword(password, user.password || ''))) {
 			response.status(401).json({ 'error': 'Unauthorized' });
