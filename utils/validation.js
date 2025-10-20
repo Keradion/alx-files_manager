@@ -65,11 +65,13 @@ const validateFile = async (file) => {
 
 		if (!(parentFile)) {
 
-			return { isValid: false, error: 'parent not found' };
+			return { isValid: false, error: 'Parent not found' };
 
 		}
 
 	}
+
+	console.log('valid ');
 
 	return { isValid: true, error: ''}; // All validation has passed
 }
