@@ -40,12 +40,15 @@ class FilesController {
 		// parentId | optional, isPublic | optional
 		// data only for file | image as Base64 of the content
 
-		const { isValid, error } = validate.validateFile(file);
-
-		console.log('valid')
+		const { isValid, error } = await validate.validateFile(file);
 
 		// Bad Request - 400
 
+		if (!isValid) {
+			console.log(error);
+			response.status(400).json({ 'error': error });
+			return;
+		}
 		// handle the case when the file type is file
 
 		if (file.type === 'file') {
