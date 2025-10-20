@@ -42,15 +42,13 @@ class DBClient{
 
 	async insertUserToDB(user) {
 		return await this.mongoclient
-			.db(database)
-			.collection('users')
+			.db(database).collection('users')
 			.insertOne(user)
 	}
 
 	async findUserByEmail(email) {
 		return await this.mongoclient
-			.db(database)
-			.collection('users')
+			.db(database).collection('users')
 			.findOne({ 'email': email }); 
 	}
 
@@ -60,11 +58,27 @@ class DBClient{
 		const _id = new objectId(id);
 
 		return await this.mongoclient
-			.db(database)
-			.collection('users')
+			.db(database).collection('users')
 			.findOne({ _id });
 	}
 
+	async findFileByParentId(id) {
+		return await this.mongoclient
+			.db(database).collection('files')
+			.findOne( { parentId: id } );
+	}
+
+	async saveFile(file) {
+		return await this.mongoclient
+			.db(database).collection('files')
+			.insertOne(file);
+	}
+
+	async saveFolder(file) {
+		return await this.mongoclient
+			.db(database).collection('files')
+			.insertOne(file);
+	}
 }
 
 const dbclient = new DBClient();

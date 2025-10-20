@@ -7,6 +7,8 @@ const UserController = require('../controllers/UsersController');
 
 const AuthController = require('../controllers/AuthController');
 
+const FilesController = require('../controllers/FilesController');
+
 // Redirecting /status and /stats endpoint requests into the corresponding handlers.
 
 router.get('/status', AppController.getStatus);
@@ -22,6 +24,8 @@ router.get('/users/me', UserController.getMe);
 router.get('/connect', AuthController.getConnect);
 router.get('/disconnect', AuthController.disconnect);
 
+// Redirecting /files endpoint request into the corresponding handler.
+router.post('/files', FilesController.files)
 
 // Exposing router to other modules requiring it.
 module.exports = router;
