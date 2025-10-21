@@ -1,7 +1,7 @@
 const validate = require('../utils/validation.js');
 const User = require('../utils/user.js');
 const dbClient = require('../utils/db.js');
-const saveFileToDisk = require('../utils/file.js');
+const saveFile = require('../utils/file.js');
 
 class FilesController {
 	
@@ -55,7 +55,7 @@ class FilesController {
 
 			// Save the new file content in the local disk
 
-			const filePath = await saveFileToDisk(file);
+			const filePath = await saveFile.saveFileToDisk(file);
 
 			// Append the user Id to the new file object
 			
@@ -93,14 +93,27 @@ class FilesController {
 		if (file.type === 'folder') {
 
 			console.log('folder');
+
+			// Save the new folder in the local disk
 			
-			const folder  = { ...file,
+			const folderPath = await saveFile.saveFolderToDisk(file);
+
+			// Append the user Id to the new file object
+
+			const folder  = {
+				name: file.name,
+				type: file.type,
 				userId: user._id,
 				isPublic: file.isPublic || false, 
-				parentId: file.parentId || 0 
+				parentId: file.parentId || 0,
+				localPath: folderPath
 			};
+
+			// Save the new folder metadata in the database
 			
 			let savedFolder = await dbClient.saveFolder(folder);
+
+			// Respond with the saved folder 
 
 			savedFolder = savedFolder.ops[0];
 

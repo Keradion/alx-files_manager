@@ -52,6 +52,8 @@ const validateFile = async (file) => {
 
 		const parentFile = await dbClient.findFileByParentId(file.parentId);
 
+		console.log(parentFile);
+
 		// If file exist but it is not a folder 
 		// that means we can not have a reference of a file by another file
 

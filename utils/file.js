@@ -1,4 +1,5 @@
 const fs = require('fs').promises
+const dbClient = require('./db.js');
 const uuid = require('uuid');
 const path = process.env.FOLDER_PATH || '/tmp/files_manager'; // Root folder path
 
@@ -53,8 +54,61 @@ const saveFileToDisk = async (file) => {
 		await fs.writeFile(`${path}/${filePath}`, fileContent);
 	}
 
+	// Handle the case when the file should be saved inside a folder
+	// parent id > 0 indicates that.
+	
+	if (parentId > 0) {
+
+		// Get the folder name associated with the given parentId
+
+		const folderPath = await dbClient.findFileByParentId(0);
+
+		console.log(folderPath);
+
+		// Construct the path the new file must be saved 
+		const newPath = `${path}/${folderPath.name}`;
+
+		console.log(newPath);
+
+	}
+
 	return filePath;
 }
+
+const saveFolderToDisk = async (folder) => {
+
+	let folderPath;
+
+	const { name, parentId } = {  ...folder };
+
+	// Creates a folder inside the root folder
+	
+	if (parentId === 0 || parentId === null || parentId === undefined){
+
+		// Produce localpath for the folder
+
+		folderPath = uuid.v4();
+
+		console.log(folderPath);
+		
+		try {
+			await fs.access(path); // Folder exist?
+
+		} catch {
+			
+			await fs.mkdir(path, { recursive: true }); // create root folder
+		}
+
+		// create  the folder in the right folder path
+
+		folderPath = `${path}/${folderPath}`;
+
+		await  fs.mkdir(folderPath, { recursive: true });
+	}
+
+	return folderPath;
+}
+
 
 const decodeFile = (data, type) => {
 
@@ -90,4 +144,9 @@ const decodeFile = (data, type) => {
 }
 
 
-module.exports = saveFileToDisk;
+
+
+module.exports = {
+	saveFileToDisk,
+	saveFolderToDisk
+}
