@@ -1,7 +1,7 @@
 const validate = require('../utils/validation.js');
 const User = require('../utils/user.js');
 const dbClient = require('../utils/db.js');
-
+const saveFileToDisk = require('../utils/file.js');
 
 class FilesController {
 	
@@ -51,21 +51,31 @@ class FilesController {
 
 		// handle the case when the file type is file
 
-		if (file.type === 'file') {
+		if (file.type === 'file' || file.type === 'image') {
+
+			// Save the new file content in the local disk
+
+			const filePath = await saveFileToDisk(file);
 
 			// Append the user Id to the new file object
 			
-			const newFile= { ... file, 
+			const newFile= {
+				name: file.name,
+				type: file.type,
 				userId: user._id, 
 				isPublic: file.isPublic || false,
-				parentId: file.parentId || 0
+				parentId: file.parentId || 0,
+				localPath: filePath
 			}
+
+			console.log(newFile);
 
 			// Save the new file in the database
 
 			let savedFile = await dbClient.saveFile(newFile);
 
 			// Respond with the saved file
+			
 			savedFile = savedFile.ops[0];
 
 			response.status(201).json({
