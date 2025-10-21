@@ -45,10 +45,10 @@ class FilesController {
 		// Bad Request - 400
 
 		if (!isValid) {
-			console.log(error);
 			response.status(400).json({ 'error': error });
 			return;
 		}
+
 		// handle the case when the file type is file
 
 		if (file.type === 'file') {
@@ -81,25 +81,29 @@ class FilesController {
 		// handle the case when the file type is Folder
 
 		if (file.type === 'folder') {
+
+			console.log('folder');
 			
-			try {
-				// lets append the user id in the file object
-				// and additional optional name value pairs 
+			const folder  = { ...file,
+				userId: user._id,
+				isPublic: file.isPublic || false, 
+				parentId: file.parentId || 0 
+			};
+			
+			let savedFolder = await dbClient.saveFolder(folder);
 
-				console.lgo('start');
-				const File = { ...file, isPublic: file.isPublic || false, parentId: file.parentId || 0 };
+			savedFolder = savedFolder.ops[0];
 
-				// save the folder in DB.
+			console.log(savedFolder);
 
-				const savedFolder = await dbClient.SaveFolder(File);
-				console.log('folder saved')
-				resposne.status(201).json(savedFolder);
-			} catch (error) {
-				response.status(500).json({ 'error': `${error}`});
-			}
-
-		// handle the case when the file type is File
-
+			response.status(201).json({
+				id: savedFolder._id,
+                                userId: savedFolder.userId,
+                                name: savedFolder.name,
+                                type: savedFolder.type,
+                                isPublic: savedFolder.isPublic,
+                                parentId: savedFolder.parentId
+			});
 	}
 }
 }
