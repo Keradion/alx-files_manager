@@ -155,7 +155,7 @@ class FilesController {
 
 		// Verify if the file has associated with the user Id
 
-		if (user.id !== file.id) {
+		if (!(fileId) || user._id !== file.userId) {
 			response.status(404).json({ 'error': 'Not found' });
 		}
 
@@ -196,8 +196,9 @@ class FilesController {
 
                 // Verify if the file has associated with the user Id
 
-                if (user.id !== file.id) {
+                if (!(fileId) || user._id.toString() !== file.userId.toString()) {
                         response.status(404).json({ 'error': 'Not found' });
+			return;
                 }
 
                 // Update the file isPublic key to false
