@@ -129,7 +129,91 @@ class FilesController {
                                 parentId: savedFolder.parentId
 			});
 	}
-}
+
+	}
+	
+	static async putPublish(request, response) {
+		
+		// Fetch the user authentication token from the request header.
+		
+		const token = request.headers['x-token'];
+
+		// Fetch the user associated with the provided token
+
+		const user = await User.getUser(token);
+
+		if (!user) {
+			response.status(401).json({ 'error': 'Unauthorized' });
+			return;
+		}
+
+		// Get the requested file id from the request parameter
+
+		const fileId = request.params.id
+
+		const file = await dbClient.findFileByParentId(fileId);
+
+		// Verify if the file has associated with the user Id
+
+		if (user.id !== file.id) {
+			response.status(404).json({ 'error': 'Not found' });
+		}
+
+		// Update the file isPublic key to true
+
+		let updatedFile = await dbClient.updateFileMetaData(file._id, 'isPublic', true)
+		
+		// Get the file 
+
+		updatedFile = await dbClient.findFileByParentId(fileId);
+
+		// Respond 
+
+		response.status(200).json(updatedFile)
+
+	}
+
+	static async putUnpublish(request, response) {
+		
+		// Fetch the user authentication token from the request header.
+
+                const token = request.headers['x-token'];
+
+                // Fetch the user associated with the provided token
+
+                const user = await User.getUser(token);
+
+                if (!user) {
+                        response.status(401).json({ 'error': 'Unauthorized' });
+                        return;
+                }
+
+                // Get the requested file id from the request parameter
+
+                const fileId = request.params.id
+
+                const file = await dbClient.findFileByParentId(fileId);
+
+                // Verify if the file has associated with the user Id
+
+                if (user.id !== file.id) {
+                        response.status(404).json({ 'error': 'Not found' });
+                }
+
+                // Update the file isPublic key to false
+
+                let updatedFile = await dbClient.updateFileMetaData(file._id, 'isPublic', false)
+
+                // Get the file
+
+                updatedFile = await dbClient.findFileByParentId(fileId);
+
+                // Respond
+
+                response.status(200).json(updatedFile)
+
+        }
+		
 }
 
 module.exports = FilesController;

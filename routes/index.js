@@ -27,5 +27,11 @@ router.get('/disconnect', AuthController.disconnect);
 // Redirecting /files endpoint request into the corresponding handler.
 router.post('/files', FilesController.files)
 
+// Redirecting /files/:id/publish and /files/:id/unpublish endpoint requests to the corresponding handlers
+
+router.put('/files/:id/publish', FilesController.putPublish);
+router.put('/files/:id/unpublish', FilesController.putUnpublish);
+
 // Exposing router to other modules requiring it.
+
 module.exports = router;

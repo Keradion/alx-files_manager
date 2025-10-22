@@ -54,7 +54,8 @@ class DBClient{
 
 	async findUserById(id) {
 
-		// construct the id for mongodb
+		// Construct the id to fit mongodb object id
+		
 		const _id = new objectId(id);
 
 		return await this.mongoclient
@@ -63,7 +64,6 @@ class DBClient{
 	}
 
 	async findFileByParentId(parentId) {
-		// construct the id for mongodb
                 
 		const _id = new objectId(parentId);
 		
@@ -73,10 +73,24 @@ class DBClient{
 	}
 
 	async saveFile(file) {
-		console.log(file);
+		
 		return await this.mongoclient
 			.db(database).collection('files')
 			.insertOne(file);
+	}
+
+	async updateFileMetaData(fileId, key, value) {
+
+                const _id = new objectId(fileId);
+
+		await this.mongoclient
+			.db(database)
+			.collection('files')
+			.updateOne({ _id }, { $set: { [key]: value }});
+
+		// Return the updated file
+		
+		return await this.findFileByParentId(fileId);
 	}
 
 	async saveFolder(file) {
