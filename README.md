@@ -1,47 +1,44 @@
-File Manager API
+# File Manager API
 
 A backend API for user authentication, file and folder storage, access control (public/private), and background processing. Built using Node.js, Express, MongoDB, Redis, Bull, and Nodemailer.
 
-Technology Stack
+---
 
-Node.js
+## Technology Stack
 
-Express
+* Node.js
+* Express
+* MongoDB
+* Redis
+* Bull (job queue)
+* Nodemailer (email transport)
+* JavaScript (ES6+)
 
-MongoDB
+---
 
-Redis
+## Features
 
-Bull (job queue)
+* User registration and token-based authentication
+* Upload of files, folders, and images
+* Listing and retrieval of files with folder hierarchy
+* Publish/unpublish control of files
+* Serving file content (download/view)
+* Background worker sending welcome emails via Nodemailer upon registration
+* Background worker generating image thumbnails (100px, 250px, 500px)
 
-Nodemailer (email transport)
+---
 
-JavaScript (ES6+)
+## Installation and Setup
 
-Features
-
-User registration and token‑based authentication
-
-Upload of files, folders and images
-
-Listing and retrieval of files (with folder hierarchy)
-
-Publish/unpublish control of files
-
-Serving of file content (download/view)
-
-Background worker for sending a welcome email via Nodemailer upon user registration
-
-Background worker for generating image thumbnails (100px, 250px, 500px)
-
-Installation and Setup
-git clone https://github.com/your‑username/alx-files_manager.git
+```bash
+git clone https://github.com/your-username/alx-files_manager.git
 cd alx-files_manager
 npm install
+```
 
+Create a `.env` file with the following values:
 
-Create a .env file (or set environment variables) with the following values:
-
+```
 PORT=5000
 DB_HOST=localhost
 DB_PORT=27017
@@ -53,175 +50,273 @@ SMTP_HOST=<your_smtp_host>
 SMTP_PORT=<smtp_port>
 SMTP_USER=<smtp_user>
 SMTP_PASS=<smtp_pass>
+```
 
-Running the Application
+---
+
+## Running the Application
 
 Start the API server:
 
+```bash
 npm start
+```
 
+Start the background worker for emails and thumbnails:
 
-Start the background worker (for email and thumbnails):
-
+```bash
 node worker.js
+```
 
-API Endpoints — curl Examples
-1. Status Check
+---
+
+## API Endpoints & Examples
+
+### 1. Check Server Status
+
+```bash
 curl http://localhost:5000/status
-
+```
 
 Response:
 
+```json
 { "redis": true, "db": true }
+```
 
-2. Stats
+---
+
+### 2. Get Statistics
+
+```bash
 curl http://localhost:5000/stats
-
+```
 
 Response:
 
+```json
 { "users": 4, "files": 30 }
+```
 
-3. Register User
+---
+
+### 3. Register User
+
+```bash
 curl -X POST http://localhost:5000/users \
-‑H "Content‑Type: application/json" \
-‑d '{"email":"bob@dylan.com","password":"toto1234!"}'
-
+  -H "Content-Type: application/json" \
+  -d '{"email":"bob@dylan.com", "password":"toto1234!"}'
+```
 
 Response:
 
-{ "id":"<userId>", "email":"bob@dylan.com" }
+```json
+{ "id": "<userId>", "email": "bob@dylan.com" }
+```
 
+*Note: A welcome email is sent asynchronously in the background.*
 
-Note: After registration, a job is queued and a welcome email is sent to the user in the background.
+---
 
-4. Authenticate (Login)
+### 4. Login (Authenticate)
+
+```bash
 curl http://localhost:5000/connect \
-‑H "Authorization: Basic Ym9iQGR5bGFuLmNvbTp0b3RvMTIzNCE="
-
+  -H "Authorization: Basic Ym9iQGR5bGFuLmNvbTp0b3RvMTIzNCE="
+```
 
 Response:
 
-{ "token":"<uuid-token>" }
+```json
+{ "token": "<uuid-token>" }
+```
 
-5. Get Current User
+---
+
+### 5. Get Current User
+
+```bash
 curl http://localhost:5000/users/me \
-‑H "X‑Token:<uuid-token>"
-
-
-Response:
-
-{ "id":"<userId>", "email":"bob@dylan.com" }
-
-6. Logout
-curl ‑X GET http://localhost:5000/disconnect \
-‑H "X‑Token:<uuid-token>"
-
-
-Response:
-Status code: 204 No Content
-
-7. Upload a File
-curl ‑X POST http://localhost:5000/files \
-‑H "X‑Token:<uuid-token>" \
-‑H "Content‑Type: application/json" \
-‑d '{ "name": "hello.txt", "type": "file", "data": "SGVsbG8gV29ybGQ=" }'
-
+  -H "X-Token: <uuid-token>"
+```
 
 Response:
 
-{ "id":"<fileId>", "userId":"<userId>", "name":"hello.txt", "type":"file", "isPublic":false, "parentId":0 }
+```json
+{ "id": "<userId>", "email": "bob@dylan.com" }
+```
 
-8. Upload a Folder
-curl ‑X POST http://localhost:5000/files \
-‑H "X‑Token:<uuid-token>" \
-‑H "Content‑Type: application/json" \
-‑d '{ "name":"photos", "type":"folder" }'
+---
 
-9. Get File Metadata
+### 6. Logout
+
+```bash
+curl -X GET http://localhost:5000/disconnect \
+  -H "X-Token: <uuid-token>"
+```
+
+Response: Status code 204 No Content
+
+---
+
+### 7. Upload File
+
+```bash
+curl -X POST http://localhost:5000/files \
+  -H "X-Token: <uuid-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "hello.txt", "type": "file", "data": "SGVsbG8gV29ybGQ=" }'
+```
+
+Response:
+
+```json
+{
+  "id": "<fileId>",
+  "userId": "<userId>",
+  "name": "hello.txt",
+  "type": "file",
+  "isPublic": false,
+  "parentId": 0
+}
+```
+
+---
+
+### 8. Upload Folder
+
+```bash
+curl -X POST http://localhost:5000/files \
+  -H "X-Token: <uuid-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "photos", "type": "folder" }'
+```
+
+---
+
+### 9. Get File Metadata
+
+```bash
 curl http://localhost:5000/files/<fileId> \
-‑H "X‑Token:<uuid-token>"
+  -H "X-Token: <uuid-token>"
+```
 
+---
 
-Response:
+### 10. List Files (with optional pagination)
 
-{ "id":"<fileId>", "userId":"<userId>", "name":"hello.txt", "type":"file", "isPublic":false, "parentId":0 }
-
-10. List Files (with optional folder and pagination)
+```bash
 curl http://localhost:5000/files \
-‑H "X‑Token:<uuid-token>"
+  -H "X-Token: <uuid-token>"
+```
 
+Optional with folder and page:
 
-Optional:
-
+```bash
 curl "http://localhost:5000/files?parentId=<folderId>&page=0" \
-‑H "X‑Token:<uuid-token>"
+  -H "X-Token: <uuid-token>"
+```
 
+---
 
-Response:
+### 11. Publish a File
 
-[
-  { "id":"...", "name":"hello.txt", "type":"file", … }
-]
-
-11. Publish a File
-curl ‑X PUT http://localhost:5000/files/<fileId>/publish \
-‑H "X‑Token:<uuid-token>"
-
+```bash
+curl -X PUT http://localhost:5000/files/<fileId>/publish \
+  -H "X-Token: <uuid-token>"
+```
 
 Response:
 
-{ "id":"<fileId>", "isPublic":true, … }
+```json
+{ "id": "<fileId>", "isPublic": true }
+```
 
-12. Unpublish a File
-curl ‑X PUT http://localhost:5000/files/<fileId>/unpublish \
-‑H "X‑Token:<uuid-token>"
+---
 
+### 12. Unpublish a File
+
+```bash
+curl -X PUT http://localhost:5000/files/<fileId>/unpublish \
+  -H "X-Token: <uuid-token>"
+```
 
 Response:
 
-{ "id":"<fileId>", "isPublic":false, … }
+```json
+{ "id": "<fileId>", "isPublic": false }
+```
 
-13. Download / View File Content
-Public file (no auth required):
+---
+
+### 13. Download / View File Content
+
+Public (no token needed):
+
+```bash
 curl http://localhost:5000/files/<fileId>/data
+```
 
-Private file (authentication required):
+Private (token required):
+
+```bash
 curl http://localhost:5000/files/<fileId>/data \
-‑H "X‑Token:<uuid-token>"
+  -H "X-Token: <uuid-token>"
+```
 
+*Response: Raw file content (e.g., Hello Webstack!)*
 
-Response:
-Raw file content (for example, text: Hello Webstack!)
+---
 
-14. Image Thumbnail Download (for type=image)
+### 14. Download Image Thumbnails
 
-Download sizes: 100, 250, 500
+Download file as resized image (for images):
 
-curl "http://localhost:5000/files/<fileId>/data?size=100" ‑so thumbnail.png
+```bash
+curl "http://localhost:5000/files/<fileId>/data?size=100" -o thumbnail.png
+```
 
-Implementation Notes
+*Supported sizes:* 100, 250, 500
 
-When a new user registers, the code enqueues a job for sending a welcome email to the user.
+---
 
-The job is processed by a worker using Bull/Redis.
+## Background Processing
 
-Nodemailer is configured via SMTP transport to send the email asynchronously, avoiding blocking the request‑response cycle.
+* User registration triggers a job to send a welcome email via Nodemailer.
+* Image uploads trigger thumbnail generation jobs (sizes 100px, 250px, 500px).
+* Jobs are handled asynchronously using Bull and Redis in `worker.js`.
 
-Code follows best practices such as ObjectId validation, secure token handling, and separation of concerns (controller, utils, worker).
+---
 
-Directory Structure
+## Project Structure
+
+```
 .
 ├── controllers/
+│   ├── AppController.js        # Handles /status and /stats endpoints  
+│   ├── AuthController.js       # Authentication logic  
+│   ├── FilesController.js      # File/folder operations, publish/unpublish  
+│   └── UsersController.js      # User registration and profile  
 ├── routes/
+│   └── index.js               # API routes  
 ├── utils/
-│   ├── redis.js
-│   └── db.js
-├── worker.js
-├── server.js
-└── README.md
+│   ├── db.js                  # MongoDB helpers  
+│   ├── redis.js               # Redis helpers  
+│   ├── decodeAuth.js          # Basic auth decoder  
+│   ├── token.js               # Token helpers  
+│   ├── validation.js          # Input validation  
+│   └── password.js            # Password hashing/validation  
+├── worker.js                  # Background job processor  
+├── package.json               # Dependencies and scripts  
+├── server.js                  # Express app startup  
+├── .env                       # Environment variables  
+└── README.md                  # Documentation  
+```
 
-Author
+---
+
+## Author
 
 Project developed by Daniel Berihun as part of the ALX Software Engineering Program.
 
+---
