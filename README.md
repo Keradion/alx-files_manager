@@ -1,47 +1,44 @@
-File Manager API
+# File Manager API
 
-A backend API for user authentication, file and folder storage, access control (public/private), and background processing. Built using Node.js, Express, MongoDB, Redis, Bull, and Nodemailer.
+A backend API for user authentication, file and folder storage, access control, and background processing using email and image thumbnails.
 
-Technology Stack
+---
 
-Node.js
+## Technology Stack
 
-Express
+- Node.js  
+- Express  
+- MongoDB  
+- Redis  
+- Bull (job queue)  
+- Nodemailer (email service)  
 
-MongoDB
+---
 
-Redis
+## Features
 
-Bull (job queue)
+- User registration with token-based authentication  
+- Upload files, folders, and images  
+- File listing, retrieval, and metadata  
+- Public/private access controls  
+- Serve file content (download/view)  
+- Background processing:  
+  - Send welcome email (via Nodemailer)  
+  - Generate image thumbnails (100px, 250px, 500px)  
 
-Nodemailer (email transport)
+---
 
-JavaScript (ES6+)
+## Installation
 
-Features
-
-User registration and token‑based authentication
-
-Upload of files, folders and images
-
-Listing and retrieval of files (with folder hierarchy)
-
-Publish/unpublish control of files
-
-Serving of file content (download/view)
-
-Background worker for sending a welcome email via Nodemailer upon user registration
-
-Background worker for generating image thumbnails (100px, 250px, 500px)
-
-Installation and Setup
-git clone https://github.com/your‑username/alx-files_manager.git
+```bash
+git clone https://github.com/your-username/alx-files_manager.git
 cd alx-files_manager
 npm install
+Environment Variables
+Create a .env file with the following values:
 
-
-Create a .env file (or set environment variables) with the following values:
-
+env
+Copy code
 PORT=5000
 DB_HOST=localhost
 DB_PORT=27017
@@ -53,164 +50,171 @@ SMTP_HOST=<your_smtp_host>
 SMTP_PORT=<smtp_port>
 SMTP_USER=<smtp_user>
 SMTP_PASS=<smtp_pass>
-
 Running the Application
-
 Start the API server:
 
+bash
+Copy code
 npm start
+Start the background worker:
 
-
-Start the background worker (for email and thumbnails):
-
+bash
+Copy code
 node worker.js
-
-API Endpoints — curl Examples
-1. Status Check
+API Endpoints & Examples
+1. Check Server Status
+bash
+Copy code
 curl http://localhost:5000/status
-
-
 Response:
 
+json
+Copy code
 { "redis": true, "db": true }
-
-2. Stats
+2. Get Statistics
+bash
+Copy code
 curl http://localhost:5000/stats
-
-
 Response:
 
+json
+Copy code
 { "users": 4, "files": 30 }
-
 3. Register User
+bash
+Copy code
 curl -X POST http://localhost:5000/users \
-‑H "Content‑Type: application/json" \
-‑d '{"email":"bob@dylan.com","password":"toto1234!"}'
-
-
+  -H "Content-Type: application/json" \
+  -d '{"email":"bob@dylan.com", "password":"toto1234!"}'
 Response:
 
-{ "id":"<userId>", "email":"bob@dylan.com" }
+json
+Copy code
+{ "id": "<userId>", "email": "bob@dylan.com" }
+Note: A welcome email is sent asynchronously in the background.
 
-
-Note: After registration, a job is queued and a welcome email is sent to the user in the background.
-
-4. Authenticate (Login)
+4. Login (Authenticate)
+bash
+Copy code
 curl http://localhost:5000/connect \
-‑H "Authorization: Basic Ym9iQGR5bGFuLmNvbTp0b3RvMTIzNCE="
-
-
+  -H "Authorization: Basic Ym9iQGR5bGFuLmNvbTp0b3RvMTIzNCE="
 Response:
 
-{ "token":"<uuid-token>" }
-
+json
+Copy code
+{ "token": "<uuid-token>" }
 5. Get Current User
+bash
+Copy code
 curl http://localhost:5000/users/me \
-‑H "X‑Token:<uuid-token>"
-
-
+  -H "X-Token: <uuid-token>"
 Response:
 
-{ "id":"<userId>", "email":"bob@dylan.com" }
-
+json
+Copy code
+{ "id": "<userId>", "email": "bob@dylan.com" }
 6. Logout
-curl ‑X GET http://localhost:5000/disconnect \
-‑H "X‑Token:<uuid-token>"
-
-
+bash
+Copy code
+curl -X GET http://localhost:5000/disconnect \
+  -H "X-Token: <uuid-token>"
 Response:
 Status code: 204 No Content
 
-7. Upload a File
-curl ‑X POST http://localhost:5000/files \
-‑H "X‑Token:<uuid-token>" \
-‑H "Content‑Type: application/json" \
-‑d '{ "name": "hello.txt", "type": "file", "data": "SGVsbG8gV29ybGQ=" }'
-
-
+7. Upload File
+bash
+Copy code
+curl -X POST http://localhost:5000/files \
+  -H "X-Token: <uuid-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "hello.txt", "type": "file", "data": "SGVsbG8gV29ybGQ=" }'
 Response:
 
-{ "id":"<fileId>", "userId":"<userId>", "name":"hello.txt", "type":"file", "isPublic":false, "parentId":0 }
-
-8. Upload a Folder
-curl ‑X POST http://localhost:5000/files \
-‑H "X‑Token:<uuid-token>" \
-‑H "Content‑Type: application/json" \
-‑d '{ "name":"photos", "type":"folder" }'
-
+json
+Copy code
+{
+  "id": "<fileId>",
+  "userId": "<userId>",
+  "name": "hello.txt",
+  "type": "file",
+  "isPublic": false,
+  "parentId": 0
+}
+8. Upload Folder
+bash
+Copy code
+curl -X POST http://localhost:5000/files \
+  -H "X-Token: <uuid-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "photos", "type": "folder" }'
 9. Get File Metadata
+bash
+Copy code
 curl http://localhost:5000/files/<fileId> \
-‑H "X‑Token:<uuid-token>"
-
-
-Response:
-
-{ "id":"<fileId>", "userId":"<userId>", "name":"hello.txt", "type":"file", "isPublic":false, "parentId":0 }
-
-10. List Files (with optional folder and pagination)
+  -H "X-Token: <uuid-token>"
+10. List Files (with optional pagination)
+bash
+Copy code
 curl http://localhost:5000/files \
-‑H "X‑Token:<uuid-token>"
+  -H "X-Token: <uuid-token>"
+Optional with folder and page:
 
-
-Optional:
-
+bash
+Copy code
 curl "http://localhost:5000/files?parentId=<folderId>&page=0" \
-‑H "X‑Token:<uuid-token>"
-
-
-Response:
-
-[
-  { "id":"...", "name":"hello.txt", "type":"file", … }
-]
-
+  -H "X-Token: <uuid-token>"
 11. Publish a File
-curl ‑X PUT http://localhost:5000/files/<fileId>/publish \
-‑H "X‑Token:<uuid-token>"
-
-
+bash
+Copy code
+curl -X PUT http://localhost:5000/files/<fileId>/publish \
+  -H "X-Token: <uuid-token>"
 Response:
 
-{ "id":"<fileId>", "isPublic":true, … }
-
+json
+Copy code
+{ "id": "<fileId>", "isPublic": true }
 12. Unpublish a File
-curl ‑X PUT http://localhost:5000/files/<fileId>/unpublish \
-‑H "X‑Token:<uuid-token>"
-
-
+bash
+Copy code
+curl -X PUT http://localhost:5000/files/<fileId>/unpublish \
+  -H "X-Token: <uuid-token>"
 Response:
 
-{ "id":"<fileId>", "isPublic":false, … }
-
+json
+Copy code
+{ "id": "<fileId>", "isPublic": false }
 13. Download / View File Content
-Public file (no auth required):
+Public (no token needed):
+
+bash
+Copy code
 curl http://localhost:5000/files/<fileId>/data
+Private (token required):
 
-Private file (authentication required):
+bash
+Copy code
 curl http://localhost:5000/files/<fileId>/data \
-‑H "X‑Token:<uuid-token>"
+  -H "X-Token: <uuid-token>"
+Response: Raw file content (e.g., Hello Webstack!)
 
+14. Download Image Thumbnails
+Downloads the file as a resized image (if the file is an image):
 
-Response:
-Raw file content (for example, text: Hello Webstack!)
+bash
+Copy code
+curl "http://localhost:5000/files/<fileId>/data?size=100" -o thumbnail.png
+Sizes supported: 100, 250, 500
 
-14. Image Thumbnail Download (for type=image)
+Background Processing
+User registration triggers a job to send a welcome email via Nodemailer.
 
-Download sizes: 100, 250, 500
+Image uploads trigger thumbnail generation jobs (sizes 100px, 250px, 500px).
 
-curl "http://localhost:5000/files/<fileId>/data?size=100" ‑so thumbnail.png
+Jobs are handled asynchronously using Bull and Redis in worker.js.
 
-Implementation Notes
-
-When a new user registers, the code enqueues a job for sending a welcome email to the user.
-
-The job is processed by a worker using Bull/Redis.
-
-Nodemailer is configured via SMTP transport to send the email asynchronously, avoiding blocking the request‑response cycle.
-
-Code follows best practices such as ObjectId validation, secure token handling, and separation of concerns (controller, utils, worker).
-
-Directory Structure
+Project Structure
+pgsql
+Copy code
 .
 ├── controllers/
 ├── routes/
@@ -220,8 +224,8 @@ Directory Structure
 ├── worker.js
 ├── server.js
 └── README.md
-
 Author
-
 Project developed by Daniel Berihun as part of the ALX Software Engineering Program.
 
+License
+This project is provided for educational purposes only.
