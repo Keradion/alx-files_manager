@@ -113,11 +113,12 @@ class FilesController {
 			
 			let savedFolder = await dbClient.saveFolder(folder);
 
+			console.log(folder);
+
 			// Respond with the saved folder 
 
 			savedFolder = savedFolder.ops[0];
 
-			console.log(savedFolder);
 
 			response.status(201).json({
 				id: savedFolder._id,

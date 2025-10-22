@@ -62,13 +62,18 @@ class DBClient{
 			.findOne({ _id });
 	}
 
-	async findFileByParentId(id) {
+	async findFileByParentId(parentId) {
+		// construct the id for mongodb
+                
+		const _id = new objectId(parentId);
+		
 		return await this.mongoclient
 			.db(database).collection('files')
-			.findOne( { parentId: id } );
+			.findOne( { _id } );
 	}
 
 	async saveFile(file) {
+		console.log(file);
 		return await this.mongoclient
 			.db(database).collection('files')
 			.insertOne(file);

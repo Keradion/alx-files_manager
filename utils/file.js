@@ -59,16 +59,31 @@ const saveFileToDisk = async (file) => {
 	// Handle the case when the file should be saved inside a folder
 	// parent id > 0 indicates that.
 	
-	if (parentId > 0) {
+	if (parentId > 0 && parenId !== null || parentId !== undefined ) {
 
-		// Get the folder name associated with the given parentId
+		// new file name as uuid 
+		
+		filePath = uuid.v4();
 
-		filePath = await dbClient.findFileByParentId(0);
+		// Get the folder associated with the given folder id ?
+		
+		const folder  = await dbClient.findFileByParentId(parentId);
 
-		console.log(filePath);
+		console.log(folder);
 
-		// Construct the path the new file must be saved 
-		const filePath = `${path}/${folderPath.name}`;
+		// Get the localPath of the folder
+
+		const folderLocalPath = folder['localPath'];
+
+	        // Construct the path the new file must be saved insider the folder
+
+		console.log(folderLocalPath);
+
+		filePath = `${folderLocalPath}/${filePath}`;
+
+		// Save the file inside the folder
+
+		await fs.writeFile(filePath, fileContent);
 
 		console.log(filePath);
 

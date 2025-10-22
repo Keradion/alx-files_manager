@@ -28,24 +28,22 @@ const validateUser = async (email, password) => {
 const validateFile = async (file) => {
 	
 	if (!(file.name)) {
-		console.log('1st condition');
 		return { isValid: false, error: 'Missing name' };
 	}
 
 	if (!(file.type === 'folder' || file.type === 'file' || file.type === 'image')){
-		console.log('2nd condition');
 		return { isValid: false, error: 'Missing type' };
 	}
 
 	if (!(file.data) && (file.type !== 'folder')) {
-		console.log('3rd condition');
 		return { isValid: false, error: 'Missing data' };
 	}
-
 
 	// Assume the user is uploading a file and a parentId is specified
 	// so we need to check if there is a folder with the given parentId
 	
+	console.log(file);
+
 	if (file.parentId) {
 		
 		// Fetch the file if any exist under the given parentId
