@@ -1,50 +1,44 @@
 # File Manager API
 
-A backend API for user authentication, file and folder storage, access control, and background processing using email and image thumbnails.
+A backend API for user authentication, file and folder storage, access control (public/private), and background processing. Built using Node.js, Express, MongoDB, Redis, Bull, and Nodemailer.
 
 ---
 
 ## Technology Stack
 
-- Node.js  
-- Express  
-- MongoDB  
-- Redis  
-- Bull (job queue)  
-- Nodemailer (email service)  
+* Node.js
+* Express
+* MongoDB
+* Redis
+* Bull (job queue)
+* Nodemailer (email transport)
+* JavaScript (ES6+)
 
 ---
 
 ## Features
 
-- User registration with token-based authentication  
-- Upload files, folders, and images  
-- File listing, retrieval, and metadata  
-- Public/private access controls  
-- Serve file content (download/view)  
-- Background processing:  
-  - Send welcome email (via Nodemailer)  
-  - Generate image thumbnails (100px, 250px, 500px)  
+* User registration and token-based authentication
+* Upload of files, folders, and images
+* Listing and retrieval of files with folder hierarchy
+* Publish/unpublish control of files
+* Serving file content (download/view)
+* Background worker sending welcome emails via Nodemailer upon registration
+* Background worker generating image thumbnails (100px, 250px, 500px)
 
 ---
 
-
-````markdown
-## Installation
+## Installation and Setup
 
 ```bash
 git clone https://github.com/your-username/alx-files_manager.git
 cd alx-files_manager
 npm install
-````
-
----
-
-## Environment Variables
+```
 
 Create a `.env` file with the following values:
 
-```env
+```
 PORT=5000
 DB_HOST=localhost
 DB_PORT=27017
@@ -68,7 +62,7 @@ Start the API server:
 npm start
 ```
 
-Start the background worker:
+Start the background worker for emails and thumbnails:
 
 ```bash
 node worker.js
@@ -161,8 +155,7 @@ curl -X GET http://localhost:5000/disconnect \
   -H "X-Token: <uuid-token>"
 ```
 
-Response:
-Status code: `204 No Content`
+Response: Status code 204 No Content
 
 ---
 
@@ -217,7 +210,7 @@ curl http://localhost:5000/files \
   -H "X-Token: <uuid-token>"
 ```
 
-Optional folder and pagination:
+Optional with folder and page:
 
 ```bash
 curl "http://localhost:5000/files?parentId=<folderId>&page=0" \
@@ -258,40 +251,40 @@ Response:
 
 ### 13. Download / View File Content
 
-**Public (no token required):**
+Public (no token needed):
 
 ```bash
 curl http://localhost:5000/files/<fileId>/data
 ```
 
-**Private (token required):**
+Private (token required):
 
 ```bash
 curl http://localhost:5000/files/<fileId>/data \
   -H "X-Token: <uuid-token>"
 ```
 
-Response: Raw file content (e.g., `Hello Webstack!`)
+*Response: Raw file content (e.g., Hello Webstack!)*
 
 ---
 
 ### 14. Download Image Thumbnails
 
-Downloads the file as a resized image (if the file is an image):
+Download file as resized image (for images):
 
 ```bash
 curl "http://localhost:5000/files/<fileId>/data?size=100" -o thumbnail.png
 ```
 
-Sizes supported: `100`, `250`, `500`
+*Supported sizes:* 100, 250, 500
 
 ---
 
 ## Background Processing
 
-* User registration triggers a job to send a **welcome email** via Nodemailer.
+* User registration triggers a job to send a welcome email via Nodemailer.
 * Image uploads trigger thumbnail generation jobs (sizes 100px, 250px, 500px).
-* Jobs are handled asynchronously using **Bull** and **Redis** in `worker.js`.
+* Jobs are handled asynchronously using Bull and Redis in `worker.js`.
 
 ---
 
@@ -300,17 +293,30 @@ Sizes supported: `100`, `250`, `500`
 ```
 .
 ├── controllers/
+│   ├── AppController.js        # Handles /status and /stats endpoints  
+│   ├── AuthController.js       # Authentication logic  
+│   ├── FilesController.js      # File/folder operations, publish/unpublish  
+│   └── UsersController.js      # User registration and profile  
 ├── routes/
+│   └── index.js               # API routes  
 ├── utils/
-│   ├── redis.js
-│   └── db.js
-├── worker.js
-├── server.js
-└── README.md
+│   ├── db.js                  # MongoDB helpers  
+│   ├── redis.js               # Redis helpers  
+│   ├── decodeAuth.js          # Basic auth decoder  
+│   ├── token.js               # Token helpers  
+│   ├── validation.js          # Input validation  
+│   └── password.js            # Password hashing/validation  
+├── worker.js                  # Background job processor  
+├── package.json               # Dependencies and scripts  
+├── server.js                  # Express app startup  
+├── .env                       # Environment variables  
+└── README.md                  # Documentation  
 ```
 
 ---
 
 ## Author
 
-Project developed by **Daniel Berihun** as part of the ALX Software Engineering Program.
+Project developed by Daniel Berihun as part of the ALX Software Engineering Program.
+
+---
