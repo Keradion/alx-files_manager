@@ -154,8 +154,11 @@ class FilesController {
 		const file = await dbClient.findFileByParentId(fileId);
 
 		// Verify if the file has associated with the user Id
+		
+		console.log(file);
+		console.log(user);
 
-		if (!(fileId) || user._id !== file.userId) {
+		if (!(user._id.equals(file.userId))) {
 			response.status(404).json({ 'error': 'Not found' });
 		}
 
@@ -196,7 +199,10 @@ class FilesController {
 
                 // Verify if the file has associated with the user Id
 
-                if (!(fileId) || user._id.toString() !== file.userId.toString()) {
+		console.log(user)
+		console.log(file)
+
+                if (!user._id.equals(file.userId)) {
                         response.status(404).json({ 'error': 'Not found' });
 			return;
                 }
