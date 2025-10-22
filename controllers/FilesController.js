@@ -158,9 +158,15 @@ class FilesController {
 		console.log(file);
 		console.log(user);
 
-		if (!(user._id.equals(file.userId))) {
+		if (!file) {
 			response.status(404).json({ 'error': 'Not found' });
+			return;
 		}
+
+		if (!(user._id.equals(file.userId))) {
+                        response.status(404).json({ 'error': 'Not found' });
+			return;
+                }
 
 		// Update the file isPublic key to true
 
@@ -202,7 +208,12 @@ class FilesController {
 		console.log(user)
 		console.log(file)
 
-                if (!user._id.equals(file.userId)) {
+		if (!file) {
+                        response.status(404).json({ 'error': 'Not found' });
+			return;
+                }
+                
+		if (!user._id.equals(file.userId)) {
                         response.status(404).json({ 'error': 'Not found' });
 			return;
                 }
