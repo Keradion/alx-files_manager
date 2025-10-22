@@ -51,7 +51,9 @@ const saveFileToDisk = async (file) => {
 		
 		console.log(filePath);
 
-		await fs.writeFile(`${path}/${filePath}`, fileContent);
+		filePath = `${path}/${filePath}`;
+
+		await fs.writeFile(filePath, fileContent);
 	}
 
 	// Handle the case when the file should be saved inside a folder
@@ -61,14 +63,14 @@ const saveFileToDisk = async (file) => {
 
 		// Get the folder name associated with the given parentId
 
-		const folderPath = await dbClient.findFileByParentId(0);
+		filePath = await dbClient.findFileByParentId(0);
 
-		console.log(folderPath);
+		console.log(filePath);
 
 		// Construct the path the new file must be saved 
-		const newPath = `${path}/${folderPath.name}`;
+		const filePath = `${path}/${folderPath.name}`;
 
-		console.log(newPath);
+		console.log(filePath);
 
 	}
 
