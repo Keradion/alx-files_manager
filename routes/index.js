@@ -32,6 +32,10 @@ router.post('/files', FilesController.files)
 router.put('/files/:id/publish', FilesController.putPublish);
 router.put('/files/:id/unpublish', FilesController.putUnpublish);
 
+// Redirecting /files/:id/data endpoint request to the corresponding handler.
+
+router.get('/files/:id/data', FilesController.getFile);
+
 // Exposing router to other modules requiring it.
 
 module.exports = router;

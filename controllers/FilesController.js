@@ -2,6 +2,9 @@ const validate = require('../utils/validation.js');
 const User = require('../utils/user.js');
 const dbClient = require('../utils/db.js');
 const saveFile = require('../utils/file.js');
+const mime = require('mime-types');
+const fs = require('fs');
+
 
 class FilesController {
 	
@@ -155,8 +158,6 @@ class FilesController {
 
 		// Verify if the file has associated with the user Id
 		
-		console.log(file);
-		console.log(user);
 
 		if (!file) {
 			response.status(404).json({ 'error': 'Not found' });
@@ -205,8 +206,6 @@ class FilesController {
 
                 // Verify if the file has associated with the user Id
 
-		console.log(user)
-		console.log(file)
 
 		if (!file) {
                         response.status(404).json({ 'error': 'Not found' });
@@ -231,7 +230,77 @@ class FilesController {
                 response.status(200).json(updatedFile)
 
         }
+
+	static async getFile(request, response) {
+
+		// Fetch the user authentication token from the request header.
+
+                const token = request.headers['x-token'];
+
+                // Fetch the user associated with the provided token
+
+                const user = await User.getUser(token);
+
+                if (!user) {
+                        response.status(401).json({ 'error': 'Unauthorized' });
+                        return;
+                }
 		
+		// Get the requested file id from the request parameter
+
+                const fileId = request.params.id
+
+                const file = await dbClient.findFileByParentId(fileId);
+
+                if (!file) {
+                        response.status(404).json({ 'error': 'Not found' });
+                        return;
+                }
+
+		// Verify the file ownwership
+		// If the requested file is priavte the only person allowed is the owner
+
+		if (!file.isPublic && !file.userId.equals(user._id)) {
+                        response.status(404).json({ 'error': 'Not found' });
+                        return;
+                }
+
+		// Folder has no content
+
+		if (file.type === 'folder') {
+                        response.status(400).json({ 'error': 'A folder does not have content' });
+                        return;
+                }
+
+		// Get the file path and read the content
+		// determine the files mime type and setting the right mime type in the response object
+		
+		fs.readFile(`${file.localPath}`, 'utf-8', (error, data) => {
+			
+			if (error) {
+			
+				response.status(404).json( { 'error': 'Not found' });
+				return;
+			}
+
+			// Handle the http response here
+		
+			if (data) {
+
+				// Get the files mime 
+
+				const fileMimeType = mime.lookup(file.name);
+
+				// Set the response mime on the http response
+
+				response.setHeader('Content-Type', fileMimeType)
+				
+				response.status(200).send(data); // Avoiding .json() here not to serialize the string content into a json lol. so .send() 
+
+				return;
+			}
+		});
+	}	
 }
 
 module.exports = FilesController;
