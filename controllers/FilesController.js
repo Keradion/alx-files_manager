@@ -263,7 +263,7 @@ class FilesController {
 		// Folder has no content
 
 		if (file.type === 'folder') {
-                        response.status(400).json({ 'error': 'A folder doesn\'t have content' });
+                        response.status(400).json({ 'error': "A folder doesn't have content" });
                         return;
                 }
 
