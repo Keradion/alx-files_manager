@@ -241,11 +241,6 @@ class FilesController {
 
                 const user = await User.getUser(token);
 
-                if (!user) {
-                        response.status(401).json({ 'error': 'Unauthorized' });
-                        return;
-                }
-		
 		// Get the requested file id from the request parameter
 
                 const fileId = request.params.id
@@ -260,7 +255,7 @@ class FilesController {
 		// Verify the file ownwership
 		// If the requested file is priavte the only person allowed is the owner
 
-		if (!file.isPublic && !file.userId.equals(user._id)) {
+		if ( file.isPublic === 'false' && !(file.userId.equals(user._id)) {
                         response.status(404).json({ 'error': 'Not found' });
                         return;
                 }
