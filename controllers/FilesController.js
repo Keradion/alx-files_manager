@@ -255,7 +255,7 @@ class FilesController {
 		// Verify the file ownwership
 		// If the requested file is priavte the only person allowed is the owner
 
-		if ( file.isPublic === 'false' && !(file.userId.equals(user._id)) {
+		if ( file.isPublic === 'false' && !(file.userId.equals(user._id))) {
                         response.status(404).json({ 'error': 'Not found' });
                         return;
                 }
@@ -271,9 +271,11 @@ class FilesController {
 		// determine the files mime type and setting the right mime type in the response object
 		
 		fs.readFile(`${file.localPath}`, 'utf-8', (error, data) => {
-			
+
+			// File not present in disk
+
 			if (error) {
-			
+	
 				response.status(404).json( { 'error': 'Not found' });
 				return;
 			}
