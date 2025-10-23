@@ -254,11 +254,20 @@ class FilesController {
 
 		// Verify the file ownwership
 		// If the requested file is priavte the only person allowed is the owner
-
+		
+		// File is private user is authorized but user is not owner of the file.
+	
 		if ( file.isPublic === 'false' && !(file.userId.equals(user._id))) {
                         response.status(404).json({ 'error': 'Not found' });
                         return;
                 }
+
+		// File is private and user is not authorized
+
+		if ( file.isPublic === 'false' && !(user)) {
+			response.status(404).json({ 'error': 'Not found' });
+                        return;
+		}
 
 		// Folder has no content
 
