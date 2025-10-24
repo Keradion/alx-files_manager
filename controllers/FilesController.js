@@ -323,7 +323,7 @@ class FilesController {
                 const user = await User.getUser(token);
 
 		if(!user) {
-			response.status(404).json({ 'error': 'Unauthorized' });
+			response.status(401).json({ 'error': 'Unauthorized' });
 			return;
 		}
 
