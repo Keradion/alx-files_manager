@@ -310,7 +310,48 @@ class FilesController {
 				return;
 			}
 		});
-	}	
+	}
+
+	static async getShow(request, response) {
+
+		// Fetch the user authentication token from the request header.
+
+                const token = request.headers['x-token'];
+
+                // Fetch the user associated with the provided token
+
+                const user = await User.getUser(token);
+
+		if(!user) {
+			response.status(404).json({ 'error': 'Unauthorized' });
+			return;
+		}
+
+                // Get the requested file id from the request parameter
+
+                const fileId = request.params.id
+
+                const file = await dbClient.findFileByParentId(fileId);
+
+                if (!file || (!(file.userId.equals(user._id)))) {
+                        response.status(404).json({ 'error': 'Not found' });
+                        return;
+                }
+
+		// send response 
+		 response.status(200).json({
+                                id: file._id,
+                                userId: file.userId,
+                                name: file.name,
+                                type: file.type,
+                                isPublic: file.isPublic,
+                                parentId: file.parentId
+                        });
+	}
+
+	static async getIndex(request, response) {
+
+	}
 }
 
 module.exports = FilesController;

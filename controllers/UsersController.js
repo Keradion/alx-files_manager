@@ -12,7 +12,7 @@ class UserController{
 		
 		const { email, password } = request.body;
 
-		const { isValid, error} = await validate(email, password);
+		const { isValid, error} = await validate.validateUser(email, password);
 
 		if (!isValid) {
 			response.status(400).json({
