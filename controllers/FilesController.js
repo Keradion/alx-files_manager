@@ -280,36 +280,28 @@ class FilesController {
                         return;
                 }
 
-		// Get the file path and read the content
-		// determine the files mime type and setting the right mime type in the response object
+		// Prepare the http response header and set proper mime type before piping 
 		
-		fs.readFile(`${file.localPath}`, 'utf-8', (error, data) => {
+		const fileMimeType = mime.lookup(file.name);
 
-			// File not present in disk
+		response.setHeader('Content-Type', fileMimeType);
 
-			if (error) {
-	
-				response.status(404).json( { 'error': 'Not found' });
-				return;
-			}
+		// Create a readStream to read the file content in a chunk and store each in buffer
 
-			// Handle the http response here
+                const readStream = fs.createReadStream(file.localPath);
+
+		// lets handle errors when the file does not exist
+                // since readStream emits error events lets handle that
+
+                readStream.on('error', () => {
+                        response.status(500).json({ 'error': 'Can not read the file' });
+                });
 		
-			if (data) {
+		// Pipe the readStrem with the writeStream which is the response http object
+		// Pipe will calls response.end() when the readStream completes and the buffer is empty.
 
-				// Get the files mime 
+		readStream.pipe(response);
 
-				const fileMimeType = mime.lookup(file.name);
-
-				// Set the response mime on the http response
-
-				response.setHeader('Content-Type', fileMimeType)
-				
-				response.status(200).send(data); // Avoiding .json() here not to serialize the string content into a json lol. so .send() 
-
-				return;
-			}
-		});
 	}
 
 	static async getShow(request, response) {
