@@ -359,7 +359,7 @@ class FilesController {
 
 		// Pagination skip and page size
 
-		const pageSize = 20; // Given requirnment 
+		const pageSize = 20
 		const skip = page * pageSize;
 
 
