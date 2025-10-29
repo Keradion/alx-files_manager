@@ -370,7 +370,7 @@ class FilesController {
 
 		console.log(allUserFiles.length);
 
-		response.status(200).send(allUserFiles);
+		response.status(200).json(allUserFiles);
 	}
 }
 
