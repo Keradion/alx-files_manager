@@ -343,6 +343,34 @@ class FilesController {
 
 	static async getIndex(request, response) {
 
+		const token = request.headers['x-token'];
+
+		const user = await User.getUser(token);
+
+		if(!user) {
+			response.status(401).json({ error: 'Unauthorized' });
+			return;
+		}
+
+		// Read the parentId and the page from the query string 
+		
+		const parentId = parseInt(request.query.parentId) || 0;
+		const page = parseInt(request.query.page) || 0;
+
+		// Pagination skip and page size
+
+		const pageSize = 5; // Given requirnment 
+		const skip = page * pageSize;
+
+
+		// Get all files inside the db that matches the user Id and parentId
+		// the function has skip and pageSize values to perform pagination 
+		
+		const allUserFiles = await dbClient.getFilesByUserandParentId(user._id, parentId, skip, pageSize);
+
+		console.log(allUserFiles.length);
+
+		response.status(200).send(allUserFiles);
 	}
 }
 

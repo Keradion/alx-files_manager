@@ -72,6 +72,22 @@ class DBClient{
 			.findOne( { _id } );
 	}
 
+	async getFilesByUserandParentId(userId, parentId, skip, pageSize){
+
+		console.log(userId);
+		console.log(parentId);
+
+		const query = { userId: userId, parentId: parentId };
+
+		return await this.mongoclient
+			.db(database).collection('files')
+			.find(query)
+			.skip(skip)
+			.limit(pageSize)
+			.toArray(); // Find returns cursor and we need the list so used to Array()
+
+	}
+
 	async saveFile(file) {
 		
 		return await this.mongoclient
