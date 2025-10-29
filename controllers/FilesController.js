@@ -382,12 +382,12 @@ class FilesController {
 
 		const result = allUserFiles.map((file) => 
 			({
-				id: file._id,
+				id: file._id.toString(),
 				userId: file.userId,
 				name: file.name,
 				type: file.type,
 				isPublic: file.isPublic,
-				parentId: file.parentId
+				parentId: file.parentId ? file.parentId.toString() : '0'
 
 			})
 		);
