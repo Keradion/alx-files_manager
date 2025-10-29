@@ -383,7 +383,7 @@ class FilesController {
 		const result = allUserFiles.map((file) => 
 			({
 				id: file._id.toString(),
-				userId: file.userId,
+				userId: file.userId.toString(),
 				name: file.name,
 				type: file.type,
 				isPublic: file.isPublic,
