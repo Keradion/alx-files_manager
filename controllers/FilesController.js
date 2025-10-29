@@ -361,6 +361,10 @@ class FilesController {
 			parentId = parseInt(request.query.parentId)
 		}
 
+		if (parentId === undefined) {
+			parentId = 0;
+		}
+
 		const page = parseInt(request.query.page) || 0;
 
 		// Pagination skip and page size
@@ -376,7 +380,19 @@ class FilesController {
 
 		console.log(allUserFiles.length);
 
-		response.status(200).json(allUserFiles);
+		const result = allUserFiles.map((file) => 
+			({
+				id: file._id,
+				userId: file.userId,
+				name: file.name,
+				type: file.type,
+				isPublic: file.isPublic,
+				parentId: file.parentId
+
+			})
+		);
+
+		response.status(200).json(result);
 	}
 }
 
