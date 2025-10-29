@@ -4,6 +4,7 @@ const dbClient = require('../utils/db.js');
 const saveFile = require('../utils/file.js');
 const mime = require('mime-types');
 const fs = require('fs');
+const { ObjectId } = require('mongodb');
 
 
 class FilesController {
@@ -354,7 +355,12 @@ class FilesController {
 
 		// Read the parentId and the page from the query string 
 		
-		const parentId = parseInt(request.query.parentId) || 0;
+		let parentId = request.query.parentId ;
+
+		if (parentId == '0') {
+			parentId = parseInt(request.query.parentId)
+		}
+
 		const page = parseInt(request.query.page) || 0;
 
 		// Pagination skip and page size
