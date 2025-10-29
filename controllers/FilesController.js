@@ -357,12 +357,10 @@ class FilesController {
 		
 		let parentId = request.query.parentId ;
 
-		if (parentId == '0') {
-			parentId = parseInt(request.query.parentId)
-		}
-
-		if (parentId === undefined) {
+		if (!parentId || parentId === '0') {
 			parentId = 0;
+		} else {
+			parentId = new ObjectId(parentId);
 		}
 
 		const page = parseInt(request.query.page) || 0;
