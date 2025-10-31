@@ -5,6 +5,7 @@ const saveFile = require('../utils/file.js');
 const mime = require('mime-types');
 const fs = require('fs');
 const { ObjectId } = require('mongodb');
+const fileQueue = require('../utils/queue.js');
 
 
 class FilesController {
@@ -82,6 +83,31 @@ class FilesController {
 			
 			savedFile = savedFile.ops[0];
 
+			// add a new Job to the fileQueue if the new file type is 'image'
+
+                        try {
+				if (file.type === 'image') {
+
+					// adding the actual job data inside fileQueue
+				
+					console.log('job added');
+
+					await fileQueue.add('ThumbnailGeneration', {
+						userId: savedFile.userId,
+						fileId: savedFile._id
+					});
+
+				} 
+			} catch (error) {
+				
+				// Log the actuall error to the console
+
+				console.error(error);
+
+				response.status(500).json({ error: 'Internal error: process failed to add a new job to fileQueue' });
+
+			}
+			
 			response.status(201).json({
 				id: savedFile._id,
 				userId: savedFile.userId,

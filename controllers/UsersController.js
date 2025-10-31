@@ -3,6 +3,7 @@ const dbClient = require('../utils/db.js');
 const Password = require('../utils/password.js');
 const validate = require('../utils/validation.js');
 const User = require('../utils/user.js');
+const bull = require('../utils/queue.js');
 
 class UserController{
         
@@ -21,19 +22,25 @@ class UserController{
 			return;
 		}
 
-                // Get hashed format of the user password. ?
+                // Get hashed format of the user password
 
                 const hashedPassword = await Password.hashPassword(password);
 
-                // Insert the new user into the database.
-                // mongo returns an object including uuid filed.
+                // Insert the new user into the database
+                // mongo returns an object including uuid filed
 
                 const newUser = await dbClient.insertUserToDB({
                         'email': email,
                         'password': hashedPassword
                 });
 
-                // Retrurn id and email of the new user saved in DB.
+		// Add a new Job to userQueue to send an email to the newly registered user 
+
+		bull.userQueue.add('Email', {
+			userId: newUser['insertedId']
+		});
+
+                // Retrurn id and email of the new user saved in DB
                 
 		response.status(201).json({
                         'id': newUser['insertedId'],
