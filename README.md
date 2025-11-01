@@ -2,6 +2,8 @@
 
 A backend API for user authentication, file and folder storage, access control (public/private), and background processing. Built using Node.js, Express, MongoDB, Redis, Bull, and Nodemailer.
 
+![Thumbnail](assets/thumbnail.png)
+
 ---
 
 ## Technology Stack
