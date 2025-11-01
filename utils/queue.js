@@ -7,7 +7,10 @@ const Queue = require('bull');
 // Jobs stored in redis the default setup is localhost:6379
 
 const fileQueue = new Queue('fileQueue');
-
+const userQueue = new Queue('userQueue');
 // Exposing the queue so that jobs can be added 
 
-module.exports = fileQueue; 
+module.exports = {
+	fileQueue,
+	userQueue
+};

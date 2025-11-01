@@ -1,5 +1,6 @@
-const fileQueue = require('./utils/filequeue.js');
-const userQueue = require('./utils/userqueue.js');
+const queue = require('./utils/queue.js');
+const dbClient = require('./utils/db.js');
+const email = require('./utils/email.js');
 
 // IMAGE THUMBNAIL GENERATION PROCESSING 
 
@@ -7,7 +8,7 @@ const userQueue = require('./utils/userqueue.js');
 // job parameter represents the job data that the queue holds
 // job is an object which has a key job.data and job.id
 
-fileQueue.process('ThumbnailGeneration', async (job) => {
+queue.fileQueue.process('ThumbnailGeneration', async (job) => {
 
 	// Extract the userId and fileId and validate  fields 
 
@@ -30,7 +31,7 @@ fileQueue.process('ThumbnailGeneration', async (job) => {
 
 // listener function runs every time 'progress' event emits
 
-fileQueue.on('progress', (job, progress) => {
+queue.fileQueue.on('progress', (job, progress) => {
 	
 	console.log(` The Job with a Job id of ${job.id} and job data ${JSON.stringify(job.data)} has been completed ${progress}%`);
 
@@ -38,7 +39,7 @@ fileQueue.on('progress', (job, progress) => {
 
 // listener function runs every time a job fails
 
-fileQueue.on('failed', (job, error) => {
+queue.fileQueue.on('failed', (job, error) => {
 
 	console.error(`The job ${JSON.stringify(job.data)} has failed: ${error.message}`);
 
@@ -46,7 +47,7 @@ fileQueue.on('failed', (job, error) => {
 
 // NEW USER REGISTERATION EMAIL SENDING PROCESSING 
 
-userQueue.process('Email', async (job) => {
+queue.userQueue.process('Email', async (job) => {
 
 	const { userId } = { ...job.data };
 
@@ -55,13 +56,13 @@ userQueue.process('Email', async (job) => {
 	// Fetch the user associated with the userId from database
 	
 	try {
-		const user = await dbClient.getUser(userId);
+		const user = await dbClient.findUserById(userId);
 		
 		if(!user) throw new Error('User not found');
-		
-		console.log(`Welcome ${user.email}`);
 
-		// Job completed
+		job.progress(50);
+
+		email.sendWelcomeEmail(user.email);
 
 		job.progress(100);
 
@@ -74,13 +75,14 @@ userQueue.process('Email', async (job) => {
 });
 
 
-userQueue.on('progress', (job, progress) => {
+queue.userQueue.on('progress', (job, progress) => {
 
-	        console.log(` The Job with a Job id of ${job.id} and job data ${JSON.stringify(job.data)} has been completed ${progress}%`);
+	        console.log(`Sending a welcome email for ${JSON.stringify(job.data)} has been completed ${progress}%`);
 });
 
-userQueue.on('failed', (job, error) => {
+queue.userQueue.on('failed', (job, error) => {
 
         console.error(`The job ${JSON.stringify(job.data)} has failed: ${error.message}`);
 
 });
+
