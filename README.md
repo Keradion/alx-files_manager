@@ -2,7 +2,11 @@
 
 A backend API for user authentication, file and folder storage, access control (public/private), and background processing. Built using Node.js, Express, MongoDB, Redis, Bull, and Nodemailer.
 
-![Thumbnail](assets/thumbnail.png)
+![Node.js](https://img.shields.io/badge/Node.js-18.x-green)
+![Express](https://img.shields.io/badge/Express.js-Backend-blue)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
+![Redis](https://img.shields.io/badge/Cache-Redis-red)
+![License](https://img.shields.io/badge/license-MIT-yellow)
 
 ---
 
