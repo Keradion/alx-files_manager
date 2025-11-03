@@ -6,7 +6,9 @@ A backend API for user authentication, file and folder storage, access control (
 ![Express](https://img.shields.io/badge/Express.js-Backend-blue)
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
 ![Redis](https://img.shields.io/badge/Cache-Redis-red)
-![License](https://img.shields.io/badge/license-MIT-yellow)
+![Bull](https://img.shields.io/badge/Queue-Bull-orange)
+![Nodemailer](https://img.shields.io/badge/Email-Nodemailer-yellowgreen)
+
 
 ---
 
