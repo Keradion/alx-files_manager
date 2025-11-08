@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    container_name: alx-files_manager-api
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env  # Ensure .env file exists in the same folder
+    depends_on:
+      - redis
+      - mongo
+    environment:
+      # These environment variables ensure the API connects correctly
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MONGO_URL: mongodb://mongo:27017/files_manager
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: alx-files_manager-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:6
+    container_name: alx-files_manager-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
