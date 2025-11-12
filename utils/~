@@ -19,7 +19,7 @@ const transporter = mailer.createTransport({
 
 // send the welcome email when a new user register
 
-const sendWelcomeEmail = async (userEmail) => {
+const sendWelcomeEmail = (userEmail) => {
 
 	transporter.sendMail({
         from: `"File Manager App" <${GMAIL_ID}>`,
@@ -36,7 +36,7 @@ const sendWelcomeEmail = async (userEmail) => {
 
 // Send an otp code 
 
-const sendOtp = async (userEmail, otp) => {
+const sendOtpEmail = (userEmail, otp) => {
 
         transporter.sendMail({
         from: `"File Manager App" <${GMAIL_ID}>`,
@@ -52,5 +52,5 @@ const sendOtp = async (userEmail, otp) => {
 
 module.exports = {
 	sendWelcomeEmail,
-	sendOtp
+	sendOtpEmail
 };

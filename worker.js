@@ -1,5 +1,6 @@
 const queue = require('./utils/queue.js');
 const dbClient = require('./utils/db.js');
+const redisClient = require('./utils/redis.js');
 const email = require('./utils/email.js');
 
 // IMAGE THUMBNAIL GENERATION PROCESSING 
@@ -62,7 +63,7 @@ queue.userQueue.process('Email', async (job) => {
 
 		job.progress(50);
 
-		email.sendWelcomeEmail(user.email);
+		await email.sendWelcomeEmail(user.email);
 
 		job.progress(100);
 
@@ -70,6 +71,53 @@ queue.userQueue.process('Email', async (job) => {
 
 		console.error(`${error.message}`);
 		throw error; // Mark the job as failed
+	}
+
+});
+
+// USER LOGIN OTP CODE SENDING PROCESSING 
+
+queue.userQueue.process('Otp', async (job) => {
+
+	const { userId, email, otp } = { ...job.data };
+
+	if (!userId) throw new Error('Missing user Id');
+	if (!email) throw new Error('Missing user email');
+	if (!otp) throw new Error('Missing otp code');
+
+	// verify if the email exists inside the database
+	// and verify if the otp is in redis and associated with the user email
+	
+	try {
+		const user = await dbClient.findUserById(userId);
+
+                if(!user) throw new Error('User not found');
+
+		// Verify otp in redis 
+
+		const otpInRedis = await redisClient.get(`2fa:${otp}:${email}`);
+
+		if (!otpInRedis) throw new Error('Opt has not been set in redis');
+
+		job.progress(25);
+		
+		// Verify rate counter in redis
+		
+		const counterInRedis = await redisClient.get(`2fa:${otp}`);
+
+		if (!counterInRedis) throw new Error('Rate Counter has not been set in redis');
+
+		job.progress(50);
+
+		// Send otp code 
+	
+                await  email.sendWelcomeEmail(user.email);
+               
+		job.progress(100);
+
+	} catch (error) {
+		console.error(`${error.message}`);
+		throw error;
 	}
 
 });

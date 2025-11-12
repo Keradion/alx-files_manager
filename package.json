@@ -24,6 +24,7 @@
     "mime-types": "^2.1.27",
     "mongodb": "^3.5.9",
     "nodemailer": "^7.0.10",
+    "otp-generator": "^4.0.1",
     "redis": "^3.1.2",
     "sha1": "^1.1.1",
     "uuid": "^8.2.0"
